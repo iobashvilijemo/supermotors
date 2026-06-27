@@ -143,8 +143,13 @@ svg {
 
 .hero-video {
   object-fit: cover;
-  opacity: 0.82;
+  opacity: 0;
   filter: saturate(1.12) contrast(1.08) brightness(0.95);
+  transition: opacity 300ms ease;
+}
+
+.hero-video.is-ready {
+  opacity: 0.82;
 }
 
 .hero-overlay {

@@ -140,16 +140,103 @@ setLanguage(localStorage.getItem("supermotors-language") || "en");
 
 if (heroVideo) {
   const videoSource = heroVideo.dataset.videoSrc;
+  let heroVideoStarted = false;
+
+  const revealHeroVideo = () => {
+    if (heroVideo.readyState >= 2) {
+      heroVideo.classList.add("is-ready");
+    }
+  };
+
+  const requestHeroPlayback = () => {
+    if (heroVideoStarted) {
+      return;
+    }
+
+    heroVideo.muted = true;
+    heroVideo.defaultMuted = true;
+    heroVideo.playsInline = true;
+    heroVideo.autoplay = true;
+
+    const playRequest = heroVideo.play();
+
+    if (playRequest?.then) {
+      playRequest
+        .then(() => {
+          heroVideoStarted = true;
+          revealHeroVideo();
+        })
+        .catch(() => {
+          heroVideoStarted = false;
+          heroVideo.classList.remove("is-ready");
+        });
+    } else {
+      heroVideoStarted = true;
+      revealHeroVideo();
+    }
+  };
+
+  heroVideo.addEventListener("loadeddata", revealHeroVideo);
+  heroVideo.addEventListener("canplay", revealHeroVideo);
+  heroVideo.addEventListener("playing", () => {
+    heroVideoStarted = true;
+    revealHeroVideo();
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) {
+      requestHeroPlayback();
+    }
+  });
 
   if (heroVideo.canPlayType("application/vnd.apple.mpegurl")) {
     heroVideo.src = videoSource;
+    heroVideo.load();
+    requestHeroPlayback();
   } else if (window.Hls?.isSupported()) {
-    const hls = new Hls();
+    const hls = new Hls({
+      abrEwmaDefaultEstimate: 12000000,
+      autoStartLoad: false,
+      capLevelToPlayerSize: false,
+      testBandwidth: false
+    });
+    let preferredLevel = -1;
+
+    hls.on(Hls.Events.MANIFEST_PARSED, () => {
+      preferredLevel = hls.levels.reduce((bestIndex, level, index) => {
+        if (bestIndex === -1 || level.bitrate > hls.levels[bestIndex].bitrate) {
+          return index;
+        }
+
+        return bestIndex;
+      }, -1);
+
+      if (preferredLevel >= 0) {
+        hls.startLevel = preferredLevel;
+        hls.currentLevel = preferredLevel;
+        hls.loadLevel = preferredLevel;
+        hls.nextLevel = preferredLevel;
+      }
+
+      hls.startLoad(0);
+    });
+
+    hls.on(Hls.Events.FRAG_BUFFERED, (_event, data) => {
+      if (data.frag?.type === "main" && data.frag.level === preferredLevel) {
+        heroVideo.currentTime = 0;
+        requestHeroPlayback();
+      }
+    });
+
+    hls.on(Hls.Events.ERROR, (_event, data) => {
+      if (data.fatal) {
+        hls.destroy();
+        heroVideo.classList.remove("is-ready");
+        heroVideo.removeAttribute("src");
+      }
+    });
+
     hls.loadSource(videoSource);
     hls.attachMedia(heroVideo);
   }
-
-  heroVideo.play().catch(() => {
-    heroVideo.removeAttribute("src");
-  });
 }
