@@ -109,6 +109,7 @@ const translatableNodes = document.querySelectorAll("[data-i18n]");
 const languageButtons = document.querySelectorAll(".lang-btn");
 const yearNode = document.querySelector("#year");
 const heroVideo = document.querySelector("#hero-video");
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 function setLanguage(language) {
   const dictionary = translations[language] || translations.en;
@@ -137,6 +138,66 @@ languageButtons.forEach((button) => {
 
 yearNode.textContent = new Date().getFullYear();
 setLanguage(localStorage.getItem("supermotors-language") || "en");
+
+function setupScrollReveals() {
+  const revealGroups = [
+    { selector: ".hero-copy", variant: "reveal-left", immediate: true },
+    { selector: ".hero-card", variant: "reveal-right", immediate: true },
+    { selector: ".section-heading", variant: "reveal-left" },
+    { selector: ".service-card", variant: "reveal-scale", stagger: true },
+    { selector: ".experience-media", variant: "reveal-left" },
+    { selector: ".experience-copy", variant: "reveal-right" },
+    { selector: ".experience-stats span", variant: "reveal-scale", stagger: true },
+    { selector: ".contact-row", variant: "reveal-left", stagger: true },
+    { selector: ".map-panel", variant: "reveal-right" }
+  ];
+
+  const revealItems = revealGroups.flatMap((group) =>
+    Array.from(document.querySelectorAll(group.selector)).map((node, index) => ({
+      node,
+      index,
+      group
+    }))
+  );
+
+  revealItems.forEach(({ node, index, group }) => {
+    node.classList.add("reveal-on-scroll", group.variant);
+
+    if (group.stagger) {
+      node.style.setProperty("--reveal-delay", `${Math.min(index * 80, 420)}ms`);
+    }
+
+    if (group.immediate) {
+      node.classList.add("is-visible");
+    }
+  });
+
+  if (prefersReducedMotion.matches || !("IntersectionObserver" in window)) {
+    revealItems.forEach(({ node }) => node.classList.add("is-visible"));
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    {
+      rootMargin: "0px 0px -12% 0px",
+      threshold: 0.16
+    }
+  );
+
+  revealItems
+    .filter(({ group }) => !group.immediate)
+    .forEach(({ node }) => observer.observe(node));
+}
+
+setupScrollReveals();
 
 if (heroVideo) {
   const videoSource = heroVideo.dataset.videoSrc;

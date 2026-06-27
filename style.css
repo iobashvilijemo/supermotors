@@ -23,6 +23,7 @@ html {
 
 body {
   margin: 0;
+  overflow-x: hidden;
   background: var(--bg);
   color: var(--text);
   font-family: Inter, "Noto Sans Georgian", "Segoe UI", Arial, sans-serif;
@@ -308,6 +309,33 @@ h3 {
 .contact-row:hover,
 .contact-row:focus-visible {
   transform: translateY(-2px);
+}
+
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translate3d(0, 34px, 0);
+  transition:
+    opacity 700ms ease,
+    transform 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.reveal-on-scroll.reveal-left {
+  transform: translate3d(-38px, 0, 0);
+}
+
+.reveal-on-scroll.reveal-right {
+  transform: translate3d(38px, 0, 0);
+}
+
+.reveal-on-scroll.reveal-scale {
+  transform: translate3d(0, 24px, 0) scale(0.96);
+}
+
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
 }
 
 .hero-card {
@@ -628,6 +656,13 @@ h3 {
   }
 }
 
+@media (max-width: 719px) {
+  .reveal-on-scroll.reveal-left,
+  .reveal-on-scroll.reveal-right {
+    transform: translate3d(0, 28px, 0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -638,7 +673,13 @@ h3 {
   }
 
   .button,
-  .contact-row {
+  .contact-row,
+  .reveal-on-scroll {
     transition: none;
+  }
+
+  .reveal-on-scroll {
+    opacity: 1;
+    transform: none;
   }
 }
