@@ -32,9 +32,18 @@
 
     <main id="top">
       <section class="hero" aria-labelledby="hero-title">
-        <video class="hero-video" autoplay muted loop playsinline poster="mnt/data/cover%20shop.png">
-          <source src="mnt/data/sm%20mj%20final.mp4" type="video/mp4" />
-        </video>
+        <video
+          id="hero-video"
+          class="hero-video"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="metadata"
+          poster="mnt/data/cover%20shop.png"
+          data-video-src="https://stream.mux.com/5ouusY47JHXnG4ouLfyxXyH5JV02rH3sLj9UeJqCjzms.m3u8"
+          aria-hidden="true"
+        ></video>
         <div class="hero-overlay"></div>
 
         <div class="hero-content">
@@ -302,6 +311,7 @@
       <a href="tel:+995 598 22 99 00" data-i18n="callNow">Call for Parts</a>
     </footer>
 
-    <script src="script.js?v=4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.20/dist/hls.min.js"></script>
+    <script src="script.js?v=5"></script>
   </body>
 </html>

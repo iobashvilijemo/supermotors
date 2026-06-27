@@ -108,6 +108,7 @@ const translations = {
 const translatableNodes = document.querySelectorAll("[data-i18n]");
 const languageButtons = document.querySelectorAll(".lang-btn");
 const yearNode = document.querySelector("#year");
+const heroVideo = document.querySelector("#hero-video");
 
 function setLanguage(language) {
   const dictionary = translations[language] || translations.en;
@@ -136,3 +137,19 @@ languageButtons.forEach((button) => {
 
 yearNode.textContent = new Date().getFullYear();
 setLanguage(localStorage.getItem("supermotors-language") || "en");
+
+if (heroVideo) {
+  const videoSource = heroVideo.dataset.videoSrc;
+
+  if (heroVideo.canPlayType("application/vnd.apple.mpegurl")) {
+    heroVideo.src = videoSource;
+  } else if (window.Hls?.isSupported()) {
+    const hls = new Hls();
+    hls.loadSource(videoSource);
+    hls.attachMedia(heroVideo);
+  }
+
+  heroVideo.play().catch(() => {
+    heroVideo.removeAttribute("src");
+  });
+}
