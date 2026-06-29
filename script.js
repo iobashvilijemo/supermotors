@@ -1,6 +1,7 @@
 const translations = {
   en: {
     navServices: "Auto Parts",
+    navOrder: "How to Order",
     navExperience: "Experience",
     navContact: "Contact",
     heroEyebrow: "Brand new auto parts",
@@ -11,6 +12,7 @@ const translations = {
     trustGuarantee: "Guarantee with our installation",
     callNow: "Call for Parts",
     findUs: "Find Location",
+    sendRequest: "Send Request",
     quickLabel: "Brand new auto parts with installation guarantee",
     servicesKicker: "Auto parts shop",
     servicesTitle: "Brand new parts for every repair",
@@ -35,6 +37,27 @@ const translations = {
     serviceTiresText: "Oils, filters, fluids and regular replacement parts.",
     servicePartsTitle: "Guaranteed when installed",
     servicePartsText: "Buy the part and install it with us for parts guarantee coverage.",
+    popularPartsLabel: "Popular requests",
+    popularFilters: "Filters",
+    popularBrakes: "Brake pads",
+    popularOils: "Oil and fluids",
+    popularSuspension: "Suspension parts",
+    popularLights: "Lights",
+    popularSensors: "Sensors",
+    orderKicker: "Simple ordering",
+    orderTitle: "Send the details, we check the part",
+    orderIntro: "A short message is enough. Share the car model, VIN code or a photo of the old part and our team will help confirm the right match.",
+    orderStepOneTitle: "Send car details",
+    orderStepOneText: "Model, year, VIN code or a photo helps us identify the correct part faster.",
+    orderStepTwoTitle: "We check availability",
+    orderStepTwoText: "We look for brand new options available on the Georgian market.",
+    orderStepThreeTitle: "Pick up or install",
+    orderStepThreeText: "You can collect the part or install it with our service for guarantee support.",
+    requestKicker: "Fast request",
+    requestTitle: "For faster help, send VIN or a part photo",
+    requestText: "Photos, VIN codes and old part numbers reduce mistakes and help us answer with the right part faster.",
+    requestShort: "VIN code, car model or part photo",
+    guaranteeText: "Guarantee support applies to parts installed by our auto service, so the part and installation are handled together.",
     experienceKicker: "Trust and reliability",
     experienceTitle: "Parts backed by real service experience",
     experienceText: "Supermotors Shop is an auto parts shop supported by an auto service with more than 30 years of experience.",
@@ -49,10 +72,14 @@ const translations = {
     facebookLabel: "Facebook",
     addressLabel: "Address",
     addressText: "Khudia Borchaloeli 3, Tbilisi",
+    hoursLabel: "Opening hours",
+    hoursText: "Mon-Sat, 10:00-19:00",
+    stickyCall: "Call Supermotors Shop",
     footerText: "brand new auto parts with guarantee when installed by our service."
   },
   ka: {
     navServices: "ავტონაწილები",
+    navOrder: "შეკვეთა",
     navExperience: "გამოცდილება",
     navContact: "კონტაქტი",
     heroEyebrow: "ახალი ავტონაწილები",
@@ -63,6 +90,7 @@ const translations = {
     trustGuarantee: "გარანტია ჩვენი მონტაჟით",
     callNow: "დაგვირეკეთ",
     findUs: "ადგილმდებარეობა",
+    sendRequest: "მოთხოვნის გაგზავნა",
     quickLabel: "ახალი ავტონაწილები მონტაჟის გარანტიით",
     servicesKicker: "ავტონაწილების მაღაზია",
     servicesTitle: "ახალი ნაწილები",
@@ -87,6 +115,27 @@ const translations = {
     serviceTiresText: "ზეთები, ფილტრები, სითხეები და რეგულარული შეცვლის ნაწილები.",
     servicePartsTitle: "გარანტია მონტაჟისას",
     servicePartsText: "შეიძინეთ ნაწილი და დაამონტაჟეთ ჩვენთან, რათა ისარგებლოთ გარანტიით.",
+    popularPartsLabel: "ხშირი მოთხოვნები",
+    popularFilters: "ფილტრები",
+    popularBrakes: "სამუხრუჭე ხუნდები",
+    popularOils: "ზეთი და სითხეები",
+    popularSuspension: "სავალი ნაწილის ნაწილები",
+    popularLights: "განათება",
+    popularSensors: "სენსორები",
+    orderKicker: "მარტივი შეკვეთა",
+    orderTitle: "გამოგვიგზავნეთ დეტალები, ჩვენ შევამოწმებთ ნაწილს",
+    orderIntro: "მოკლე შეტყობინებაც საკმარისია. მოგვწერეთ მანქანის მოდელი, VIN კოდი ან ძველი ნაწილის ფოტო და ჩვენი გუნდი დაგეხმარებათ სწორი ნაწილის შერჩევაში.",
+    orderStepOneTitle: "გამოგვიგზავნეთ მანქანის დეტალები",
+    orderStepOneText: "მოდელი, წელი, VIN კოდი ან ფოტო გვეხმარება სწორი ნაწილის სწრაფად მოძებნაში.",
+    orderStepTwoTitle: "ვამოწმებთ ხელმისაწვდომობას",
+    orderStepTwoText: "ვეძებთ საქართველოს ბაზარზე ხელმისაწვდომ ახალ ვარიანტებს.",
+    orderStepThreeTitle: "წაიღეთ ან დაამონტაჟეთ",
+    orderStepThreeText: "შეგიძლიათ ნაწილი წაიღოთ ან დაამონტაჟოთ ჩვენს სერვისში გარანტიის მხარდაჭერით.",
+    requestKicker: "სწრაფი მოთხოვნა",
+    requestTitle: "სწრაფი დახმარებისთვის გამოგვიგზავნეთ VIN ან ნაწილის ფოტო",
+    requestText: "ფოტოები, VIN კოდები და ძველი ნაწილის ნომრები ამცირებს შეცდომის რისკს და გვეხმარება სწრაფად გიპასუხოთ.",
+    requestShort: "VIN კოდი, მანქანის მოდელი ან ნაწილის ფოტო",
+    guaranteeText: "გარანტია ვრცელდება ჩვენს ავტოსერვისში დამონტაჟებულ ნაწილებზე, ამიტომ ნაწილი და მონტაჟი ერთად მოწმდება.",
     experienceKicker: "ნდობა და საიმედოობა",
     experienceTitle: "ნაწილები, რომლებსაც რეალური სერვისის გამოცდილება ამყარებს",
     experienceText: "Supermotors Shop არის ავტონაწილების მაღაზია, რომელსაც მხარს უჭერს 30 წელზე მეტი გამოცდილების მქონე ავტოსერვისი.",
@@ -101,6 +150,9 @@ const translations = {
     facebookLabel: "Facebook",
     addressLabel: "მისამართი",
     addressText: "ხუდია ბორჩალოელის 3, თბილისი",
+    hoursLabel: "სამუშაო საათები",
+    hoursText: "ორშ-შაბ, 10:00-19:00",
+    stickyCall: "დაურეკეთ Supermotors Shop-ს",
     footerText: "ახალი ავტონაწილები გარანტიით, როცა მონტაჟი ჩვენს სერვისში სრულდება."
   }
 };
@@ -145,6 +197,9 @@ function setupScrollReveals() {
     { selector: ".hero-card", variant: "reveal-right", immediate: true },
     { selector: ".section-heading", variant: "reveal-left" },
     { selector: ".service-card", variant: "reveal-scale", stagger: true },
+    { selector: ".popular-parts", variant: "reveal-scale" },
+    { selector: ".order-step", variant: "reveal-left", stagger: true },
+    { selector: ".request-panel", variant: "reveal-right" },
     { selector: ".experience-media", variant: "reveal-left" },
     { selector: ".experience-copy", variant: "reveal-right" },
     { selector: ".experience-stats span", variant: "reveal-scale", stagger: true },
@@ -177,6 +232,11 @@ function setupScrollReveals() {
     return;
   }
 
+  if (window.location.hash) {
+    revealItems.forEach(({ node }) => node.classList.add("is-visible"));
+    return;
+  }
+
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -195,6 +255,27 @@ function setupScrollReveals() {
   revealItems
     .filter(({ group }) => !group.immediate)
     .forEach(({ node }) => observer.observe(node));
+
+  const revealVisibleItems = () => {
+    revealItems
+      .filter(({ group }) => !group.immediate)
+      .forEach(({ node }) => {
+        const bounds = node.getBoundingClientRect();
+        const isInView = bounds.top < window.innerHeight * 0.9 && bounds.bottom > 0;
+
+        if (isInView) {
+          node.classList.add("is-visible");
+          observer.unobserve(node);
+        }
+      });
+  };
+
+  requestAnimationFrame(revealVisibleItems);
+  window.setTimeout(revealVisibleItems, 300);
+  window.setTimeout(revealVisibleItems, 1000);
+  window.addEventListener("load", revealVisibleItems);
+  window.addEventListener("scroll", revealVisibleItems, { passive: true });
+  window.addEventListener("hashchange", () => window.setTimeout(revealVisibleItems, 50));
 }
 
 setupScrollReveals();
