@@ -162,6 +162,7 @@ const languageButtons = document.querySelectorAll(".lang-btn");
 const yearNode = document.querySelector("#year");
 const heroVideo = document.querySelector("#hero-video");
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const defaultLanguage = "ka";
 
 function setLanguage(language) {
   const dictionary = translations[language] || translations.en;
@@ -189,7 +190,7 @@ languageButtons.forEach((button) => {
 });
 
 yearNode.textContent = new Date().getFullYear();
-setLanguage(localStorage.getItem("supermotors-language") || "en");
+setLanguage(localStorage.getItem("supermotors-language") || defaultLanguage);
 
 function setupScrollReveals() {
   const revealGroups = [
