@@ -1,5 +1,7 @@
 const WORKBOOK_URL = "mnt/ნაწილების მარაგი.xlsx";
 const PAGE_SIZE = 24;
+const WHATSAPP_NUMBER = "995599084458";
+const SEARCH_ANALYTICS_DELAY = 500;
 const EXPECTED_HEADERS = [
   "საქონლის კოდი",
   "დასახელება",
@@ -23,6 +25,7 @@ const pageNumbers = document.querySelector("#page-numbers");
 let allProducts = [];
 let filteredProducts = [];
 let currentPage = 1;
+let searchAnalyticsTimer = null;
 
 function cleanValue(value) {
   return String(value ?? "").replace(/^\uFEFF/, "").trim();
@@ -34,6 +37,23 @@ function normalizeSearchValue(value) {
 
 function removeSearchSpacing(value) {
   return value.replace(/\s+/g, "");
+}
+
+function normalizeBrandValue(value) {
+  return normalizeSearchValue(value);
+}
+
+function createWhatsAppRequestUrl(product) {
+  const message = [
+    "გამარჯობა, მაინტერესებს ეს ავტონაწილი:",
+    `დასახელება: ${product.name || "—"}`,
+    `ნაწილის კოდი: ${product.partNumber || "—"}`,
+    `შტრიხკოდი: ${product.barcode || "—"}`,
+    "გთხოვთ, შემიმოწმოთ ხელმისაწვდომობა.",
+    "VIN კოდი: "
+  ].join("\n");
+
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }
 
 function validateHeaders(rows) {
@@ -107,6 +127,7 @@ function createProductCard(product) {
   const cardBottom = document.createElement("div");
   const priceLabel = document.createElement("span");
   const price = document.createElement("strong");
+  const requestLink = document.createElement("a");
 
   card.className = "product-card";
   cardTop.className = "product-card-top";
@@ -117,6 +138,7 @@ function createProductCard(product) {
   cardBottom.className = "product-card-bottom";
   priceLabel.className = "product-price-label";
   price.className = "product-price";
+  requestLink.className = "product-request-link";
 
   brand.textContent = product.brand || "ბრენდი მითითებული არ არის";
   itemNumber.textContent = `#${product.id}`;
@@ -129,9 +151,21 @@ function createProductCard(product) {
 
   priceLabel.textContent = "ფასი";
   price.textContent = formatPrice(product.price);
+  requestLink.href = createWhatsAppRequestUrl(product);
+  requestLink.target = "_blank";
+  requestLink.rel = "noopener noreferrer";
+  requestLink.textContent = "ხელმისაწვდომობის შემოწმება";
+  requestLink.dataset.trackEvent = "product_whatsapp_click";
+  requestLink.dataset.trackLocation = "product_card";
+  requestLink.dataset.itemId = product.partNumber || product.barcode || String(product.id);
+  requestLink.dataset.itemBrand = product.brand || "unknown";
+  requestLink.setAttribute(
+    "aria-label",
+    `${product.name || "ავტონაწილი"} — ხელმისაწვდომობის შემოწმება WhatsApp-ით`
+  );
   cardTop.append(brand, itemNumber);
   cardBottom.append(priceLabel, price);
-  card.append(cardTop, name, details, cardBottom);
+  card.append(cardTop, name, details, requestLink, cardBottom);
   return card;
 }
 
@@ -212,7 +246,7 @@ function applyFilters() {
       !query ||
       product.searchText.includes(query) ||
       product.compactSearchText.includes(compactQuery);
-    const matchesBrand = !selectedBrand || product.brand === selectedBrand;
+    const matchesBrand = !selectedBrand || normalizeBrandValue(product.brand) === selectedBrand;
     return matchesSearch && matchesBrand;
   });
 
@@ -222,15 +256,40 @@ function applyFilters() {
 }
 
 function populateBrands() {
-  const brands = Array.from(
-    new Set(allProducts.map((product) => product.brand).filter(Boolean))
-  ).sort((first, second) => first.localeCompare(second, "ka-GE", { sensitivity: "base" }));
+  const brandGroups = new Map();
+
+  allProducts.forEach((product) => {
+    if (!product.brand) {
+      return;
+    }
+
+    const key = normalizeBrandValue(product.brand);
+    const variants = brandGroups.get(key) || new Map();
+    variants.set(product.brand, (variants.get(product.brand) || 0) + 1);
+    brandGroups.set(key, variants);
+  });
+
+  const brands = Array.from(brandGroups, ([value, variants]) => {
+    const label = Array.from(variants.entries()).sort((first, second) => {
+      if (second[1] !== first[1]) {
+        return second[1] - first[1];
+      }
+
+      const firstIsUppercase = first[0] === first[0].toLocaleUpperCase();
+      const secondIsUppercase = second[0] === second[0].toLocaleUpperCase();
+      return Number(secondIsUppercase) - Number(firstIsUppercase);
+    })[0][0];
+
+    return { value, label };
+  }).sort((first, second) =>
+    first.label.localeCompare(second.label, "ka-GE", { sensitivity: "base" })
+  );
 
   const fragment = document.createDocumentFragment();
   brands.forEach((brand) => {
     const option = document.createElement("option");
-    option.value = brand;
-    option.textContent = brand;
+    option.value = brand.value;
+    option.textContent = brand.label;
     fragment.append(option);
   });
   brandFilter.append(fragment);
@@ -257,7 +316,7 @@ async function loadProducts() {
       throw new Error("XLSX reader is unavailable");
     }
 
-    const response = await fetch(WORKBOOK_URL, { cache: "no-store" });
+    const response = await fetch(WORKBOOK_URL);
     if (!response.ok) {
       throw new Error(`Workbook request failed with status ${response.status}`);
     }
@@ -300,13 +359,40 @@ async function loadProducts() {
   }
 }
 
-productSearch.addEventListener("input", applyFilters);
-brandFilter.addEventListener("change", applyFilters);
+productSearch.addEventListener("input", () => {
+  applyFilters();
+  window.clearTimeout(searchAnalyticsTimer);
+  searchAnalyticsTimer = window.setTimeout(() => {
+    if (!productSearch.value.trim()) {
+      return;
+    }
+
+    window.trackSupermotorsEvent?.("catalog_search", {
+      query_length: productSearch.value.trim().length,
+      results_count: filteredProducts.length,
+      has_results: filteredProducts.length > 0
+    });
+
+    if (!filteredProducts.length) {
+      window.trackSupermotorsEvent?.("catalog_zero_results", {
+        query_length: productSearch.value.trim().length
+      });
+    }
+  }, SEARCH_ANALYTICS_DELAY);
+});
+
+brandFilter.addEventListener("change", () => {
+  applyFilters();
+  window.trackSupermotorsEvent?.("catalog_brand_filter", {
+    filter_active: Boolean(brandFilter.value)
+  });
+});
 
 clearFiltersButton.addEventListener("click", () => {
   productSearch.value = "";
   brandFilter.value = "";
   applyFilters();
+  window.trackSupermotorsEvent?.("catalog_filters_cleared");
   productSearch.focus();
 });
 

@@ -8,6 +8,20 @@
       name="description"
       content="Supermotors Shop-ის ავტონაწილების კატალოგი — მოძებნეთ პროდუქტი დასახელებით, ბრენდით, შტრიხკოდით ან ნაწილის კოდით."
     />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18183969448"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'AW-18183969448');
+      function gtag_report_conversion() {
+        gtag('event', 'conversion', {
+          'send_to': 'AW-18183969448/gtrECLiO99AcEKi15d5D',
+          'transaction_id': ''
+        });
+      }
+    </script>
     <script>
       try {
         if (localStorage.getItem("supermotors-theme") === "dark") {
@@ -17,11 +31,13 @@
         // Bright mode remains the default when storage is unavailable.
       }
     </script>
-    <link rel="stylesheet" href="style.css?v=9" />
-    <link rel="stylesheet" href="products.css?v=1" />
+    <link rel="stylesheet" href="style.css?v=10" />
+    <link rel="stylesheet" href="products.css?v=2" />
     <link rel="icon" href="mnt/data/shop.png" />
   </head>
   <body class="products-body">
+    <a class="skip-link" href="#top" data-i18n="skipToContent">Skip to main content</a>
+
     <header class="site-header" aria-label="Primary navigation">
       <a class="brand" href="index.html#top" aria-label="Supermotors Shop home">
         <img src="mnt/data/shop.png" alt="Supermotors Shop logo" />
@@ -93,6 +109,7 @@
             <input
               id="product-search"
               type="search"
+              aria-label="ავტონაწილების ძებნა"
               placeholder="ძებნა დასახელებით, კოდით ან ბრენდით"
               autocomplete="off"
               disabled
@@ -116,7 +133,7 @@
           <p id="catalog-page-status"></p>
         </div>
 
-        <div id="products-grid" class="products-grid" aria-live="polite" aria-busy="true"></div>
+        <div id="products-grid" class="products-grid" aria-busy="true"></div>
 
         <div id="catalog-empty" class="catalog-empty" hidden>
           <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -153,8 +170,8 @@
       <span data-i18n="stickyCall">Call Supermotors Shop</span>
     </a>
 
-    <script src="script.js?v=15"></script>
+    <script src="script.js?v=16"></script>
     <script src="vendor/xlsx.full.min.js"></script>
-    <script src="products.js?v=3"></script>
+    <script src="products.js?v=4"></script>
   </body>
 </html>

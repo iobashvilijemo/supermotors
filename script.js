@@ -1,5 +1,6 @@
 const translations = {
   en: {
+    skipToContent: "Skip to main content",
     navServices: "Auto Parts",
     navOrder: "How to Order",
     navExperience: "Experience",
@@ -78,6 +79,7 @@ const translations = {
     footerText: "brand new auto parts with guarantee when installed by our service."
   },
   ka: {
+    skipToContent: "მთავარ შინაარსზე გადასვლა",
     navServices: "ავტონაწილები",
     navOrder: "შეკვეთა",
     navExperience: "გამოცდილება",
@@ -167,6 +169,16 @@ const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)
 const defaultLanguage = "ka";
 const defaultTheme = "light";
 
+function trackSupermotorsEvent(eventName, parameters = {}) {
+  if (typeof window.gtag !== "function") {
+    return;
+  }
+
+  window.gtag("event", eventName, parameters);
+}
+
+window.trackSupermotorsEvent = trackSupermotorsEvent;
+
 const themeLabels = {
   en: {
     dark: "Dark",
@@ -244,6 +256,40 @@ languageButtons.forEach((button) => {
 themeToggle.addEventListener("click", () => {
   const currentTheme = document.documentElement.dataset.theme || defaultTheme;
   setTheme(currentTheme === "dark" ? "light" : "dark");
+});
+
+document.addEventListener("click", (event) => {
+  const link = event.target.closest("a[href]");
+  if (!link) {
+    return;
+  }
+
+  const href = link.getAttribute("href") || "";
+  const explicitEvent = link.dataset.trackEvent;
+  const trackingParameters = {
+    link_location: link.dataset.trackLocation || (link.closest(".product-card") ? "product_card" : "site")
+  };
+
+  if (link.dataset.itemId) {
+    trackingParameters.item_id = link.dataset.itemId;
+  }
+
+  if (link.dataset.itemBrand) {
+    trackingParameters.item_brand = link.dataset.itemBrand;
+  }
+
+  if (explicitEvent) {
+    trackSupermotorsEvent(explicitEvent, trackingParameters);
+  }
+
+  if (href.startsWith("tel:") || href.includes("wa.me/")) {
+    const method = href.startsWith("tel:") ? "phone" : "whatsapp";
+    trackSupermotorsEvent("generate_lead", { ...trackingParameters, method });
+
+    if (typeof window.gtag_report_conversion === "function") {
+      window.gtag_report_conversion();
+    }
+  }
 });
 
 yearNode.textContent = new Date().getFullYear();
@@ -339,7 +385,7 @@ function setupScrollReveals() {
 
 setupScrollReveals();
 
-if (heroVideo) {
+if (heroVideo && !prefersReducedMotion.matches) {
   const videoSource = heroVideo.dataset.videoSrc;
   let heroVideoStarted = false;
   let hlsPlayer = null;

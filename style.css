@@ -17,7 +17,7 @@
   --contact-gradient-top: rgba(247, 249, 252, 0.65);
   --contact-gradient-bottom: #edf3f9;
   --footer-bg: #e5edf6;
-  --blue: #1677ff;
+  --blue: #0b61d8;
   --blue-dark: #0b4fb3;
   --red: #e21d2f;
   --white: #ffffff;
@@ -73,6 +73,24 @@ video {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  padding: 0.65rem 0.9rem;
+  border-radius: 8px;
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 850;
+  transform: translateY(-160%);
+  transition: transform 160ms ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
 }
 
 svg {
@@ -1081,6 +1099,10 @@ h3 {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  .hero-video {
+    display: none;
   }
 
   .hero-video {
