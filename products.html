@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ka">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ავტონაწილები | Supermotors Shop</title>
+    <meta
+      name="description"
+      content="Supermotors Shop-ის ავტონაწილების კატალოგი — მოძებნეთ პროდუქტი დასახელებით, ბრენდით, შტრიხკოდით ან ნაწილის კოდით."
+    />
+    <script>
+      try {
+        if (localStorage.getItem("supermotors-theme") === "dark") {
+          document.documentElement.dataset.theme = "dark";
+        }
+      } catch (error) {
+        // Bright mode remains the default when storage is unavailable.
+      }
+    </script>
+    <link rel="stylesheet" href="style.css?v=8" />
+    <link rel="stylesheet" href="products.css?v=1" />
+    <link rel="icon" href="mnt/data/shop.png" />
+  </head>
+  <body class="products-body">
+    <header class="site-header" aria-label="Primary navigation">
+      <a class="brand" href="index.html#top" aria-label="Supermotors Shop home">
+        <img src="mnt/data/shop.png" alt="Supermotors Shop logo" />
+        <span>Supermotors Shop</span>
+      </a>
+
+      <nav class="nav-links" aria-label="Page sections">
+        <a class="is-current" href="products.html" data-i18n="navServices" aria-current="page">Auto Parts</a>
+        <a href="index.html#order" data-i18n="navOrder">How to Order</a>
+        <a href="index.html#experience" data-i18n="navExperience">Experience</a>
+        <a href="index.html#contact" data-i18n="navContact">Contact</a>
+      </nav>
+
+      <div class="header-controls">
+        <button class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false">
+          <svg class="theme-icon theme-icon-moon" aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
+          </svg>
+          <svg class="theme-icon theme-icon-sun" aria-hidden="true" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.41M17.66 6.34l1.41-1.41" />
+          </svg>
+          <span class="theme-toggle-label">Dark</span>
+        </button>
+
+        <div class="language-switcher" aria-label="Language switcher">
+          <button class="lang-btn" type="button" data-lang="en" aria-pressed="false">EN</button>
+          <button class="lang-btn is-active" type="button" data-lang="ka" aria-pressed="true">KA</button>
+        </div>
+      </div>
+    </header>
+
+    <main id="top" class="products-main">
+      <section class="products-intro" aria-labelledby="products-title">
+        <div class="products-intro-copy">
+          <a class="products-back" href="index.html#top">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+            მთავარ გვერდზე დაბრუნება
+          </a>
+          <p class="section-kicker">Supermotors Shop</p>
+          <h1 id="products-title">ავტონაწილების კატალოგი</h1>
+          <p>მოძებნეთ სასურველი პროდუქტი დასახელებით, ბრენდით, შტრიხკოდით ან ნაწილის კოდით.</p>
+        </div>
+
+        <a class="catalog-summary" href="tel:+995599084458" aria-label="დარეკეთ ნომერზე +995 599 08 44 58">
+          <span class="catalog-summary-icon">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.2 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.68 2.8a2 2 0 0 1-.45 2.11L8.09 9.88a16 16 0 0 0 6 6l1.25-1.25a2 2 0 0 1 2.11-.45c.9.32 1.84.55 2.8.68A2 2 0 0 1 22 16.92Z" />
+            </svg>
+          </span>
+          <span>
+            <strong>+995 599 08 44 58</strong>
+            <small>დაგვიკავშირდით</small>
+          </span>
+        </a>
+      </section>
+
+      <section class="catalog-section" aria-label="ავტონაწილების სია">
+        <div class="catalog-toolbar">
+          <label class="catalog-search" for="product-search">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-4-4" />
+            </svg>
+            <input
+              id="product-search"
+              type="search"
+              placeholder="ძებნა დასახელებით, კოდით ან ბრენდით"
+              autocomplete="off"
+              disabled
+            />
+          </label>
+
+          <label class="catalog-filter" for="brand-filter">
+            <span>ბრენდი</span>
+            <select id="brand-filter" disabled>
+              <option value="">ყველა ბრენდი</option>
+            </select>
+          </label>
+
+          <button id="clear-filters" class="clear-filters" type="button" disabled>გასუფთავება</button>
+        </div>
+
+        <div id="catalog-error" class="catalog-message catalog-error" role="alert" hidden></div>
+
+        <div class="catalog-results-bar">
+          <p id="catalog-status" aria-live="polite">მარაგის ჩატვირთვა...</p>
+          <p id="catalog-page-status"></p>
+        </div>
+
+        <div id="products-grid" class="products-grid" aria-live="polite" aria-busy="true"></div>
+
+        <div id="catalog-empty" class="catalog-empty" hidden>
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-4-4" />
+          </svg>
+          <h2>პროდუქტი ვერ მოიძებნა</h2>
+          <p>შეცვალეთ საძიებო სიტყვა ან ბრენდის ფილტრი.</p>
+        </div>
+
+        <nav class="catalog-pagination" aria-label="კატალოგის გვერდები">
+          <button id="previous-page" type="button" disabled>
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6" /></svg>
+            წინა
+          </button>
+          <div id="page-numbers" class="page-numbers"></div>
+          <button id="next-page" type="button" disabled>
+            შემდეგი
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg>
+          </button>
+        </nav>
+      </section>
+    </main>
+
+    <footer class="site-footer products-footer">
+      <p>&copy; <span id="year"></span> Supermotors Shop. <span data-i18n="footerText">Brand new auto parts with guarantee when installed by our service.</span></p>
+      <a href="tel:+995599084458" data-i18n="callNow">Call for Parts</a>
+    </footer>
+
+    <a class="mobile-call-bar" href="tel:+995599084458">
+      <svg aria-hidden="true" viewBox="0 0 24 24">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.2 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.68 2.8a2 2 0 0 1-.45 2.11L8.09 9.88a16 16 0 0 0 6 6l1.25-1.25a2 2 0 0 1 2.11-.45c.9.32 1.84.55 2.8.68A2 2 0 0 1 22 16.92Z" />
+      </svg>
+      <span data-i18n="stickyCall">Call Supermotors Shop</span>
+    </a>
+
+    <script src="script.js?v=15"></script>
+    <script src="vendor/xlsx.full.min.js"></script>
+    <script src="products.js?v=3"></script>
+  </body>
+</html>
