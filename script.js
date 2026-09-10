@@ -342,15 +342,16 @@ setupScrollReveals();
 if (heroVideo) {
   const videoSource = heroVideo.dataset.videoSrc;
   let heroVideoStarted = false;
+  let hlsPlayer = null;
 
   const revealHeroVideo = () => {
-    if (heroVideo.readyState >= 2) {
+    if (!heroVideo.paused && heroVideo.readyState >= 2) {
       heroVideo.classList.add("is-ready");
     }
   };
 
   const requestHeroPlayback = () => {
-    if (heroVideoStarted) {
+    if (heroVideoStarted && !heroVideo.paused) {
       return;
     }
 
@@ -369,7 +370,6 @@ if (heroVideo) {
         })
         .catch(() => {
           heroVideoStarted = false;
-          heroVideo.classList.remove("is-ready");
         });
     } else {
       heroVideoStarted = true;
@@ -377,8 +377,8 @@ if (heroVideo) {
     }
   };
 
-  heroVideo.addEventListener("loadeddata", revealHeroVideo);
-  heroVideo.addEventListener("canplay", revealHeroVideo);
+  heroVideo.addEventListener("loadeddata", requestHeroPlayback);
+  heroVideo.addEventListener("canplay", requestHeroPlayback);
   heroVideo.addEventListener("playing", () => {
     heroVideoStarted = true;
     revealHeroVideo();
@@ -390,54 +390,43 @@ if (heroVideo) {
     }
   });
 
-  if (heroVideo.canPlayType("application/vnd.apple.mpegurl")) {
+  if (window.Hls?.isSupported()) {
+    hlsPlayer = new Hls({
+      capLevelToPlayerSize: true,
+      enableWorker: true,
+      startLevel: -1
+    });
+
+    hlsPlayer.on(Hls.Events.MEDIA_ATTACHED, () => {
+      hlsPlayer.loadSource(videoSource);
+    });
+
+    hlsPlayer.on(Hls.Events.MANIFEST_PARSED, requestHeroPlayback);
+
+    hlsPlayer.on(Hls.Events.ERROR, (_event, data) => {
+      if (!data.fatal) {
+        return;
+      }
+
+      if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+        hlsPlayer.startLoad();
+        return;
+      }
+
+      if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+        hlsPlayer.recoverMediaError();
+        return;
+      }
+
+      hlsPlayer.destroy();
+      hlsPlayer = null;
+      heroVideo.classList.remove("is-ready");
+    });
+
+    hlsPlayer.attachMedia(heroVideo);
+  } else if (heroVideo.canPlayType("application/vnd.apple.mpegurl")) {
     heroVideo.src = videoSource;
     heroVideo.load();
     requestHeroPlayback();
-  } else if (window.Hls?.isSupported()) {
-    const hls = new Hls({
-      abrEwmaDefaultEstimate: 12000000,
-      autoStartLoad: false,
-      capLevelToPlayerSize: false,
-      testBandwidth: false
-    });
-    let preferredLevel = -1;
-
-    hls.on(Hls.Events.MANIFEST_PARSED, () => {
-      preferredLevel = hls.levels.reduce((bestIndex, level, index) => {
-        if (bestIndex === -1 || level.bitrate > hls.levels[bestIndex].bitrate) {
-          return index;
-        }
-
-        return bestIndex;
-      }, -1);
-
-      if (preferredLevel >= 0) {
-        hls.startLevel = preferredLevel;
-        hls.currentLevel = preferredLevel;
-        hls.loadLevel = preferredLevel;
-        hls.nextLevel = preferredLevel;
-      }
-
-      hls.startLoad(0);
-    });
-
-    hls.on(Hls.Events.FRAG_BUFFERED, (_event, data) => {
-      if (data.frag?.type === "main" && data.frag.level === preferredLevel) {
-        heroVideo.currentTime = 0;
-        requestHeroPlayback();
-      }
-    });
-
-    hls.on(Hls.Events.ERROR, (_event, data) => {
-      if (data.fatal) {
-        hls.destroy();
-        heroVideo.classList.remove("is-ready");
-        heroVideo.removeAttribute("src");
-      }
-    });
-
-    hls.loadSource(videoSource);
-    hls.attachMedia(heroVideo);
   }
 }
