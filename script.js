@@ -161,8 +161,59 @@ const translatableNodes = document.querySelectorAll("[data-i18n]");
 const languageButtons = document.querySelectorAll(".lang-btn");
 const yearNode = document.querySelector("#year");
 const heroVideo = document.querySelector("#hero-video");
+const themeToggle = document.querySelector(".theme-toggle");
+const themeToggleLabel = document.querySelector(".theme-toggle-label");
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const defaultLanguage = "ka";
+const defaultTheme = "light";
+
+const themeLabels = {
+  en: {
+    dark: "Dark",
+    light: "Bright",
+    switchToDark: "Switch to dark mode",
+    switchToLight: "Switch to bright mode"
+  },
+  ka: {
+    dark: "\u10db\u10e3\u10e5\u10d8",
+    light: "\u10dc\u10d0\u10d7\u10d4\u10da\u10d8",
+    switchToDark: "\u10db\u10e3\u10e5 \u10e0\u10d4\u10df\u10d8\u10db\u10d6\u10d4 \u10d2\u10d0\u10d3\u10d0\u10e0\u10d7\u10d5\u10d0",
+    switchToLight: "\u10dc\u10d0\u10d7\u10d4\u10da \u10e0\u10d4\u10df\u10d8\u10db\u10d6\u10d4 \u10d2\u10d0\u10d3\u10d0\u10e0\u10d7\u10d5\u10d0"
+  }
+};
+
+function getStoredTheme() {
+  try {
+    return localStorage.getItem("supermotors-theme") === "dark" ? "dark" : defaultTheme;
+  } catch (error) {
+    return defaultTheme;
+  }
+}
+
+function updateThemeToggle(theme) {
+  const language = document.documentElement.lang === "en" ? "en" : "ka";
+  const isDark = theme === "dark";
+  const labels = themeLabels[language];
+
+  themeToggle.setAttribute("aria-pressed", String(isDark));
+  themeToggle.setAttribute("aria-label", isDark ? labels.switchToLight : labels.switchToDark);
+  themeToggle.title = isDark ? labels.switchToLight : labels.switchToDark;
+  themeToggleLabel.textContent = isDark ? labels.light : labels.dark;
+}
+
+function setTheme(theme, persist = true) {
+  const nextTheme = theme === "dark" ? "dark" : defaultTheme;
+  document.documentElement.dataset.theme = nextTheme;
+  updateThemeToggle(nextTheme);
+
+  if (persist) {
+    try {
+      localStorage.setItem("supermotors-theme", nextTheme);
+    } catch (error) {
+      // The selected theme still applies for this visit.
+    }
+  }
+}
 
 function setLanguage(language) {
   const dictionary = translations[language] || translations.en;
@@ -183,13 +234,20 @@ function setLanguage(language) {
   });
 
   localStorage.setItem("supermotors-language", language);
+  updateThemeToggle(document.documentElement.dataset.theme || defaultTheme);
 }
 
 languageButtons.forEach((button) => {
   button.addEventListener("click", () => setLanguage(button.dataset.lang));
 });
 
+themeToggle.addEventListener("click", () => {
+  const currentTheme = document.documentElement.dataset.theme || defaultTheme;
+  setTheme(currentTheme === "dark" ? "light" : "dark");
+});
+
 yearNode.textContent = new Date().getFullYear();
+setTheme(getStoredTheme(), false);
 setLanguage(localStorage.getItem("supermotors-language") || defaultLanguage);
 
 function setupScrollReveals() {

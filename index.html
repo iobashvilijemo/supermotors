@@ -9,7 +9,16 @@
       content="Supermotors Shop supplies brand new auto parts available on the Georgian market, with guarantee support when parts are installed by our experienced auto service."
     />
     <meta name="google-site-verification" content="XnPL1E3aJDWZ-cBWEc4aIhf59yNUJ8zJRs2qhTWmoA4" />
-    <link rel="stylesheet" href="style.css?v=7" />
+    <script>
+      try {
+        if (localStorage.getItem("supermotors-theme") === "dark") {
+          document.documentElement.dataset.theme = "dark";
+        }
+      } catch (error) {
+        // Bright mode remains the default when storage is unavailable.
+      }
+    </script>
+    <link rel="stylesheet" href="style.css?v=8" />
     <link rel="icon" href="mnt/data/shop.png" />
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18183969448">
@@ -54,9 +63,22 @@
         <a href="#contact" data-i18n="navContact">Contact</a>
       </nav>
 
-      <div class="language-switcher" aria-label="Language switcher">
-        <button class="lang-btn" type="button" data-lang="en" aria-pressed="false">EN</button>
-        <button class="lang-btn is-active" type="button" data-lang="ka" aria-pressed="true">KA</button>
+      <div class="header-controls">
+        <button class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false">
+          <svg class="theme-icon theme-icon-moon" aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
+          </svg>
+          <svg class="theme-icon theme-icon-sun" aria-hidden="true" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.41M17.66 6.34l1.41-1.41" />
+          </svg>
+          <span class="theme-toggle-label">Dark</span>
+        </button>
+
+        <div class="language-switcher" aria-label="Language switcher">
+          <button class="lang-btn" type="button" data-lang="en" aria-pressed="false">EN</button>
+          <button class="lang-btn is-active" type="button" data-lang="ka" aria-pressed="true">KA</button>
+        </div>
       </div>
     </header>
 
@@ -457,6 +479,6 @@
     </a>
 
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.20/dist/hls.min.js"></script>
-    <script src="script.js?v=13"></script>
+    <script src="script.js?v=14"></script>
   </body>
 </html>
