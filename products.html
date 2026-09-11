@@ -33,7 +33,7 @@
       }
     </script>
     <link rel="stylesheet" href="style.css?v=10" />
-    <link rel="stylesheet" href="products.css?v=2" />
+    <link rel="stylesheet" href="products.css?v=3" />
     <link rel="icon" href="mnt/data/shop.png" />
   </head>
   <body class="products-body">
@@ -124,6 +124,13 @@
             </select>
           </label>
 
+          <label class="catalog-filter" for="category-filter">
+            <span>კატეგორია</span>
+            <select id="category-filter" disabled>
+              <option value="">ყველა კატეგორია</option>
+            </select>
+          </label>
+
           <button id="clear-filters" class="clear-filters" type="button" disabled>გასუფთავება</button>
         </div>
 
@@ -142,7 +149,7 @@
             <path d="m20 20-4-4" />
           </svg>
           <h2>პროდუქტი ვერ მოიძებნა</h2>
-          <p>შეცვალეთ საძიებო სიტყვა ან ბრენდის ფილტრი.</p>
+          <p>შეცვალეთ საძიებო სიტყვა, კატეგორია ან ბრენდის ფილტრი.</p>
         </div>
 
         <nav class="catalog-pagination" aria-label="კატალოგის გვერდები">
@@ -173,6 +180,6 @@
 
     <script src="script.js?v=16"></script>
     <script src="vendor/xlsx.full.min.js"></script>
-    <script src="products.js?v=4"></script>
+    <script src="products.js?v=5"></script>
   </body>
 </html>

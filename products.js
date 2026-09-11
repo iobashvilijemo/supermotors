@@ -7,11 +7,13 @@ const EXPECTED_HEADERS = [
   "დასახელება",
   "საქონლის არტიკული",
   "ბრენდი",
-  "ფასი"
+  "ფასი",
+  "კატეგორია"
 ];
 
 const productSearch = document.querySelector("#product-search");
 const brandFilter = document.querySelector("#brand-filter");
+const categoryFilter = document.querySelector("#category-filter");
 const clearFiltersButton = document.querySelector("#clear-filters");
 const catalogStatus = document.querySelector("#catalog-status");
 const catalogPageStatus = document.querySelector("#catalog-page-status");
@@ -40,6 +42,10 @@ function removeSearchSpacing(value) {
 }
 
 function normalizeBrandValue(value) {
+  return normalizeSearchValue(value);
+}
+
+function normalizeCategoryValue(value) {
   return normalizeSearchValue(value);
 }
 
@@ -77,16 +83,20 @@ function mapProducts(rows) {
         name: cleanValue(columns[1]),
         partNumber: cleanValue(columns[2]),
         brand: cleanValue(columns[3]),
-        price: cleanValue(columns[4])
+        price: cleanValue(columns[4]),
+        category: cleanValue(columns[5])
       };
 
       product.searchText = normalizeSearchValue(
-        `${product.name} ${product.partNumber} ${product.barcode} ${product.brand}`
+        `${product.name} ${product.partNumber} ${product.barcode} ${product.brand} ${product.category}`
       );
       product.compactSearchText = removeSearchSpacing(product.searchText);
       return product;
     })
-    .filter((product) => product.name || product.partNumber || product.barcode || product.brand);
+    .filter(
+      (product) =>
+        product.name || product.partNumber || product.barcode || product.brand || product.category
+    );
 }
 
 function formatNumber(value) {
@@ -240,6 +250,7 @@ function applyFilters() {
   const query = normalizeSearchValue(productSearch.value);
   const compactQuery = removeSearchSpacing(query);
   const selectedBrand = brandFilter.value;
+  const selectedCategory = categoryFilter.value;
 
   filteredProducts = allProducts.filter((product) => {
     const matchesSearch =
@@ -247,11 +258,13 @@ function applyFilters() {
       product.searchText.includes(query) ||
       product.compactSearchText.includes(compactQuery);
     const matchesBrand = !selectedBrand || normalizeBrandValue(product.brand) === selectedBrand;
-    return matchesSearch && matchesBrand;
+    const matchesCategory =
+      !selectedCategory || normalizeCategoryValue(product.category) === selectedCategory;
+    return matchesSearch && matchesBrand && matchesCategory;
   });
 
   currentPage = 1;
-  clearFiltersButton.disabled = !query && !selectedBrand;
+  clearFiltersButton.disabled = !query && !selectedBrand && !selectedCategory;
   renderProducts();
 }
 
@@ -293,6 +306,44 @@ function populateBrands() {
     fragment.append(option);
   });
   brandFilter.append(fragment);
+}
+
+function populateCategories() {
+  const categoryGroups = new Map();
+
+  allProducts.forEach((product) => {
+    if (!product.category) {
+      return;
+    }
+
+    const key = normalizeCategoryValue(product.category);
+    const variants = categoryGroups.get(key) || new Map();
+    variants.set(product.category, (variants.get(product.category) || 0) + 1);
+    categoryGroups.set(key, variants);
+  });
+
+  const categories = Array.from(categoryGroups, ([value, variants]) => {
+    const label = Array.from(variants.entries()).sort((first, second) => {
+      if (second[1] !== first[1]) {
+        return second[1] - first[1];
+      }
+
+      return first[0].localeCompare(second[0], "ka-GE", { sensitivity: "base" });
+    })[0][0];
+
+    return { value, label };
+  }).sort((first, second) =>
+    first.label.localeCompare(second.label, "ka-GE", { sensitivity: "base" })
+  );
+
+  const fragment = document.createDocumentFragment();
+  categories.forEach((category) => {
+    const option = document.createElement("option");
+    option.value = category.value;
+    option.textContent = category.label;
+    fragment.append(option);
+  });
+  categoryFilter.append(fragment);
 }
 
 function showLoadingCards() {
@@ -344,9 +395,11 @@ async function loadProducts() {
 
     filteredProducts = allProducts;
     populateBrands();
+    populateCategories();
 
     productSearch.disabled = false;
     brandFilter.disabled = false;
+    categoryFilter.disabled = false;
     clearFiltersButton.disabled = true;
     renderProducts();
   } catch (error) {
@@ -388,9 +441,17 @@ brandFilter.addEventListener("change", () => {
   });
 });
 
+categoryFilter.addEventListener("change", () => {
+  applyFilters();
+  window.trackSupermotorsEvent?.("catalog_category_filter", {
+    filter_active: Boolean(categoryFilter.value)
+  });
+});
+
 clearFiltersButton.addEventListener("click", () => {
   productSearch.value = "";
   brandFilter.value = "";
+  categoryFilter.value = "";
   applyFilters();
   window.trackSupermotorsEvent?.("catalog_filters_cleared");
   productSearch.focus();
