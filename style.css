@@ -445,6 +445,10 @@ h3 {
   transform: translate3d(38px, 0, 0);
 }
 
+.reveal-on-scroll.reveal-fade {
+  transform: none;
+}
+
 .reveal-on-scroll.reveal-scale {
   transform: translate3d(0, 24px, 0) scale(0.96);
 }
@@ -767,16 +771,113 @@ h3 {
 }
 
 .experience-media {
+  position: relative;
   overflow: hidden;
+  min-height: 260px;
+  aspect-ratio: 4 / 3;
   border: 1px solid var(--line);
   border-radius: 8px;
+  background: #050a12;
   box-shadow: var(--shadow);
+  isolation: isolate;
 }
 
-.experience-media img {
+.experience-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 650ms ease,
+    visibility 0s linear 650ms;
+}
+
+.experience-slide.is-active {
+  z-index: 1;
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.experience-slide img {
   width: 100%;
-  min-height: 260px;
+  height: 100%;
+  min-height: 0;
+  object-fit: contain;
+}
+
+.experience-slide-cover img {
   object-fit: cover;
+  object-position: center;
+}
+
+.experience-slide-control {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  background: rgba(5, 10, 18, 0.66);
+  color: var(--white);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: background-color 180ms ease, transform 180ms ease;
+  backdrop-filter: blur(6px);
+}
+
+.experience-slide-control:hover,
+.experience-slide-control:focus-visible {
+  background: rgba(11, 97, 216, 0.9);
+  transform: translateY(-50%) scale(1.06);
+}
+
+.experience-slide-control svg {
+  width: 24px;
+  height: 24px;
+}
+
+.experience-slide-prev {
+  left: 0.8rem;
+}
+
+.experience-slide-next {
+  right: 0.8rem;
+}
+
+.experience-slide-indicators {
+  position: absolute;
+  left: 50%;
+  bottom: 0.85rem;
+  z-index: 2;
+  display: flex;
+  gap: 0.45rem;
+  transform: translateX(-50%);
+}
+
+.experience-slide-indicators button {
+  width: 10px;
+  height: 10px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.48);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: width 240ms ease, background-color 240ms ease;
+}
+
+.experience-slide-indicators button.is-active {
+  width: 24px;
+  background: var(--red);
+}
+
+.experience-slide-indicators button:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 3px;
 }
 
 .experience-copy {
@@ -1199,6 +1300,12 @@ h3 {
 
   .brand-list[aria-hidden="true"] {
     display: none;
+  }
+
+  .experience-slide,
+  .experience-slide-control,
+  .experience-slide-indicators button {
+    transition: none;
   }
 
   .reveal-on-scroll {

@@ -165,6 +165,7 @@ const translatableNodes = document.querySelectorAll("[data-i18n]");
 const languageButtons = document.querySelectorAll(".lang-btn");
 const yearNode = document.querySelector("#year");
 const heroVideo = document.querySelector("#hero-video");
+const experienceSlideshow = document.querySelector(".experience-slideshow");
 const themeToggle = document.querySelector(".theme-toggle");
 const themeToggleLabel = document.querySelector(".theme-toggle-label");
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -305,6 +306,7 @@ function setupScrollReveals() {
     { selector: ".section-heading", variant: "reveal-left" },
     { selector: ".service-card", variant: "reveal-scale", stagger: true },
     { selector: ".popular-parts", variant: "reveal-scale" },
+    { selector: ".brands-title", variant: "reveal-fade" },
     { selector: ".order-step", variant: "reveal-left", stagger: true },
     { selector: ".request-panel", variant: "reveal-right" },
     { selector: ".experience-media", variant: "reveal-left" },
@@ -386,6 +388,82 @@ function setupScrollReveals() {
 }
 
 setupScrollReveals();
+
+function setupExperienceSlideshow() {
+  if (!experienceSlideshow) {
+    return;
+  }
+
+  const slides = Array.from(experienceSlideshow.querySelectorAll(".experience-slide"));
+  const indicators = Array.from(experienceSlideshow.querySelectorAll(".experience-slide-indicators button"));
+  const controls = Array.from(experienceSlideshow.querySelectorAll("[data-slide-direction]"));
+
+  if (slides.length < 2) {
+    return;
+  }
+
+  let activeIndex = 0;
+  let slideshowTimer;
+
+  const showSlide = (nextIndex) => {
+    if (nextIndex === activeIndex) {
+      return;
+    }
+
+    slides[activeIndex].classList.remove("is-active");
+    slides[activeIndex].setAttribute("aria-hidden", "true");
+    indicators[activeIndex]?.classList.remove("is-active");
+    indicators[activeIndex]?.setAttribute("aria-current", "false");
+
+    slides[nextIndex].classList.add("is-active");
+    slides[nextIndex].setAttribute("aria-hidden", "false");
+    indicators[nextIndex]?.classList.add("is-active");
+    indicators[nextIndex]?.setAttribute("aria-current", "true");
+    activeIndex = nextIndex;
+  };
+
+  const showNextSlide = () => showSlide((activeIndex + 1) % slides.length);
+
+  const startSlideshow = () => {
+    window.clearInterval(slideshowTimer);
+    slideshowTimer = window.setInterval(showNextSlide, 4000);
+  };
+
+  controls.forEach((control) => {
+    control.addEventListener("click", () => {
+      const direction = Number(control.dataset.slideDirection);
+      showSlide((activeIndex + direction + slides.length) % slides.length);
+
+      if (!prefersReducedMotion.matches) {
+        startSlideshow();
+      }
+    });
+  });
+
+  indicators.forEach((indicator, index) => {
+    indicator.addEventListener("click", () => {
+      showSlide(index);
+
+      if (!prefersReducedMotion.matches) {
+        startSlideshow();
+      }
+    });
+  });
+
+  if (!prefersReducedMotion.matches) {
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        window.clearInterval(slideshowTimer);
+      } else {
+        startSlideshow();
+      }
+    });
+
+    startSlideshow();
+  }
+}
+
+setupExperienceSlideshow();
 
 if (heroVideo && !prefersReducedMotion.matches) {
   const videoSource = heroVideo.dataset.videoSrc;
